@@ -29,7 +29,7 @@ Agents can finish purchases without any one person, server or AI holding the pow
 
 ## Demo
 
-Video: [`demo.mp4`](demo.mp4) (2 min). Screens: Mission Control → AI Negotiation → Transaction Inspector → Governance → Audit Trail.
+Video: [`demo.mp4`](demo.mp4) (48 s, voiceover). Screens: landing → authorization playground (within policy · missing approval · tampered) → Mission Control → Governance.
 
 | Mission Control | Transaction Inspector (malicious invoice) |
 |---|---|
