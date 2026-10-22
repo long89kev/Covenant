@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* COVENANT · Operational Trust (COVENANT_UI_Design_Package/01_DESIGN_SYSTEM.md, design.tokens.json).
+   Midnight navigation, quiet light canvas. Cobalt = action, teal = observed Tide-verified proof ONLY,
+   amber = pending, red = denial. Colour never carries a verdict alone: every status also has words. */
+
+@theme inline {
+    --default-transition-duration: 150ms;
+    --font-sans: var(--font-sans), Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-heading: var(--font-sans);
+    --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+    /* shadcn semantic roles, mapped onto the COVENANT palette */
+    --color-background: var(--cv-canvas);
+    --color-foreground: var(--cv-text);
+    --color-card: var(--cv-card);
+    --color-card-foreground: var(--cv-text);
+    --color-popover: var(--cv-card);
+    --color-popover-foreground: var(--cv-text);
+    --color-primary: var(--cv-cobalt);
+    --color-primary-foreground: #ffffff;
+    --color-secondary: var(--cv-cobalt-soft);
+    --color-secondary-foreground: var(--cv-cobalt-ink);
+    --color-muted: var(--cv-subtle);
+    --color-muted-foreground: var(--cv-text-secondary);
+    --color-accent: var(--cv-cobalt-soft);
+    --color-accent-foreground: var(--cv-cobalt-ink);
+    --color-destructive: var(--cv-danger);
+    --color-success: var(--cv-success);
+    --color-warning: var(--cv-warning);
+    --color-border: var(--cv-border);
+    --color-input: var(--cv-border);
+    --color-ring: var(--cv-cobalt);
+
+    /* COVENANT tokens */
+    --color-midnight: var(--cv-midnight);
+    --color-midnight-hover: var(--cv-midnight-hover);
+    --color-cobalt: var(--cv-cobalt);
+    --color-cobalt-hover: var(--cv-cobalt-hover);
+    --color-cobalt-soft: var(--cv-cobalt-soft);
+    --color-cobalt-ink: var(--cv-cobalt-ink);
+    --color-teal: var(--cv-teal);
+    --color-teal-soft: var(--cv-teal-soft);
+    --color-teal-ink: var(--cv-teal-ink);
+    --color-canvas: var(--cv-canvas);
+    --color-subtle: var(--cv-subtle);
+    --color-border-strong: var(--cv-border-strong);
+    --color-ink: var(--cv-text);
+    --color-ink-secondary: var(--cv-text-secondary);
+    --color-ink-muted: var(--cv-text-muted);
+    --color-success-soft: var(--cv-success-soft);
+    --color-warning-soft: var(--cv-warning-soft);
+    --color-warning-ink: var(--cv-warning-ink);
+    --color-danger: var(--cv-danger);
+    --color-danger-soft: var(--cv-danger-soft);
+    --color-danger-ink: var(--cv-danger-ink);
+    --color-neutral: var(--cv-neutral);
+    --color-neutral-soft: var(--cv-neutral-soft);
+    --color-violet: var(--cv-violet);
+    --color-violet-soft: var(--cv-violet-soft);
+
+    --radius-control: 10px;
+    --radius-card: 16px;
+    --radius-dialog: 20px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-3xl: 20px;
+
+    --shadow-card: 0 6px 24px rgba(23, 39, 62, 0.045);
+    --shadow-dialog: 0 24px 64px rgba(12, 23, 40, 0.18);
+
+    --text-display: 38px;
+    --text-display--line-height: 46px;
+    --text-h1: 30px;
+    --text-h1--line-height: 38px;
+    --text-h2: 23px;
+    --text-h2--line-height: 30px;
+    --text-h3: 18px;
+    --text-h3--line-height: 26px;
+    --text-body: 14px;
+    --text-body--line-height: 22px;
+    --text-small: 12px;
+    --text-small--line-height: 18px;
+    --text-micro: 11px;
+    --text-micro--line-height: 16px;
+    --text-kpi: 32px;
+    --text-kpi--line-height: 40px;
+
+}
+
+:root {
+    color-scheme: light;
+    --cv-midnight: #0c1728;
+    --cv-midnight-hover: #162740;
+    --cv-cobalt: #245cf6;
+    --cv-cobalt-hover: #1a4bd6;
+    --cv-cobalt-soft: #eaf0ff;
+    --cv-cobalt-ink: #1840b8;
+    --cv-teal: #02a992;
+    --cv-teal-soft: #e4f8f2;
+    --cv-teal-ink: #04705f;
+    --cv-canvas: #f5f7fb;
+    --cv-card: #ffffff;
+    --cv-subtle: #f8fafd;
+    --cv-border: #e1e7f0;
+    --cv-border-strong: #bbc8d9;
+    --cv-text: #16243a;
+    --cv-text-secondary: #53647b;
+    --cv-text-muted: #6b7a8d;
+    --cv-success: #13845f;
+    --cv-success-soft: #e6f5ee;
+    --cv-warning: #c27c0e;
+    --cv-warning-soft: #fff5e3;
+    /* AA-contrast text variants of the status hues (raw tokens are for icons, borders and fills) */
+    --cv-warning-ink: #8a5300;
+    --cv-danger: #d94353;
+    --cv-danger-soft: #fdeef0;
+    --cv-danger-ink: #b42335;
+    --cv-neutral: #687993;
+    --cv-neutral-soft: #eef1f6;
+    --cv-violet: #7a4fd6;
+    --cv-violet-soft: #f2edfd;
+    --cv-sidebar-width: 248px;
+    --cv-header-height: 72px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/60;
+  }
+  html {
+    @apply font-sans antialiased;
+    font-size: 14px;
+  }
+  body {
+    @apply min-h-screen bg-canvas text-body text-ink;
+  }
+  ::selection {
+    background: rgba(36, 92, 246, 0.18);
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :where(a, summary, button, [tabindex]):focus-visible {
+    @apply rounded-[6px] outline-2 outline-offset-2 outline-cobalt;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility card {
+  @apply rounded-card border border-border bg-card shadow-card;
+}
+
+@utility eyebrow {
+  @apply text-micro font-semibold tracking-[0.12em] text-ink-muted uppercase;
+}
