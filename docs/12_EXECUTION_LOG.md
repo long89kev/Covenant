@@ -194,3 +194,11 @@ refused), so no number-formatting edge cases exist; covered by test vectors.
 - Simulated components: agents, payment policy, mock rail
 - Test summary: 33/33 unit + 34/34 Playwright pass, typecheck clean, build OK
 - Video file / repo: pending
+
+## 2026-10-22 ~17:30 — UI redesign v2 "Editorial Authority" (presentation only) — VERIFIED (UI) / SIMULATED (authority unchanged)
+
+- Scope: restyled the five workspace screens (`/dashboard`, `/negotiate`, `/transactions[/id]`, `/governance`, `/audit`) to `design/app-v2/` (reference copied into the repo). No change to `lib/`, `app/api/`, `policies/`, `tidecloak.json`, auth, executor or verifier code.
+- Shared tokens: `styles/tokens.css`, values 1:1 from `design/app-v2/landing.v2.tokens.reference.json`. The landing v2 source is not in this repo; it must import the same file.
+- Honesty rules kept: lime fill (`verified`) still reachable only from an executor receipt with `TIDE_SIGNATURE_VERIFIED`; the gate headline says "Eligible under simulated rules" in fallback; the mode strip cannot be dismissed.
+- Tests: 33/33 unit, 45/45 Playwright (7 project-specific skips), including palette parity, no cobalt/midnight/teal pixels, 0 horizontal overflow at 390/768/1024/1440 px, drawer `aria-expanded` + Escape, reduced motion. Typecheck and build clean.
+- Not browser-verified: the authenticated views (negotiation transcript, inspector columns, evidence rows), because they need a human Tide login (no auth bypass by design).

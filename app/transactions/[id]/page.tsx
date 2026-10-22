@@ -3,15 +3,13 @@
 import Link from 'next/link'
 import { use, useCallback, useEffect, useState } from 'react'
 import { useTideCloak } from '@tidecloak/nextjs'
-import { ListChecks } from 'lucide-react'
 import { AppShell } from '@/components/covenant/app-shell'
-import { PageHeading, SecurityEmptyState, Spinner } from '@/components/covenant/primitives'
-import { RequireLogin, SessionExpired, useApi } from '@/components/covenant/session'
+import { EditorialPageHeader, GateState, Loading } from '@/components/covenant/primitives'
+import { RequireLogin, SessionExpired, useApi, useCapability } from '@/components/covenant/session'
 import {
-  ActionResultView, ApprovalMatrix, AuthorityZone, EventTimeline, ExecutorVerdict, InspectorHeader, NegativeTests, ProofDisclosure, ProposedZone, TamperedView,
-  type ActionResult, type Detail,
+  ActionResultView, ApprovalMatrix, AuthorityZone, BoundaryRule, EventTimeline, ExecutorVerdict, InspectorHeader, NegativeTests, ProofDisclosure,
+  ProposedZone, TamperedView, type ActionResult, type Detail,
 } from '@/components/covenant/transaction-inspector'
-import { Button } from '@/components/ui/button'
 import { reasonText, txRef } from '@/lib/ui/model'
 
 type Tampered = { id: string; tampered: true; status: string; canonical: string; sha256: string }
@@ -43,13 +41,13 @@ function Inspector({ id }: { id: string }) {
     setBusy(false)
   }
 
-  if (load.state === 'loading') return <p role="status" className="flex items-center gap-2 text-ink-secondary"><Spinner /> Loading transaction…</p>
+  if (load.state === 'loading') return <Loading>Loading transaction…</Loading>
   if (load.state === 'error') {
     if (load.status === 401) return <SessionExpired />
     return (
-      <SecurityEmptyState tone="danger" title={`Transaction unavailable (${load.code})`} action={<Button variant="outline" asChild><Link href="/transactions">All transactions</Link></Button>}>
+      <GateState tone="danger" kicker={load.code} title="Transaction unavailable" action={<Link className="btn-line" href="/transactions">All transactions ↗</Link>}>
         {reasonText(load.code)}
-      </SecurityEmptyState>
+      </GateState>
     )
   }
 
@@ -61,17 +59,18 @@ function Inspector({ id }: { id: string }) {
   return (
     <>
       <InspectorHeader d={d} />
-      <div aria-live="polite" className="mb-5 empty:hidden">{result && <ActionResultView r={result} />}</div>
-      {/* 34 / 34 / 32 at ≥1280px; two columns with the executor full width below; one column on mobile */}
-      <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-[34fr_34fr_32fr]">
+      <div aria-live="polite" className="empty:hidden">{result && <ActionResultView r={result} />}</div>
+      {/* proposal (paper) / authority gate (dark) / executor verdict (paper); stacked in this order ≤1250px */}
+      <div className="inspector-grid">
         <ProposedZone d={d} />
         <AuthorityZone d={d}>
           <ApprovalMatrix d={d} canApprove={canApprove} busy={busy} onApprove={(role, label) => run(`Approve as ${label}`, `/api/transactions/${id}/approve`, { role })} />
         </AuthorityZone>
         <ExecutorVerdict d={d} busy={busy} onExecute={execute} />
       </div>
-      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <div className="flex min-w-0 flex-col gap-5">
+      <BoundaryRule id={d.id} />
+      <div className="lower-grid">
+        <div className="min-w-0">
           <ProofDisclosure d={d} />
           <NegativeTests d={d} busy={busy} onRun={(kind, title) => run(title, `/api/transactions/${id}/attack`, { kind })} />
         </div>
@@ -81,17 +80,26 @@ function Inspector({ id }: { id: string }) {
   )
 }
 
+// App-level mode is never LIVE; a per-transaction live proof is shown only in the executor column.
+function Key({ id }: { id: string }) {
+  const { mode } = useCapability()
+  return (
+    <div className="inspector-key mono">
+      <span>Frozen / {txRef(id)}</span>
+      <span className="sim-label">{mode === 'SIMULATED' ? 'Simulated · no Tide proof' : mode === 'UNAVAILABLE' ? 'Authority unavailable' : 'Proof status in column 03'}</span>
+    </div>
+  )
+}
+
 export default function TransactionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { authenticated } = useTideCloak()
   return (
-    <AppShell crumbs={[{ label: 'Transactions', href: '/transactions' }, { label: txRef(id) }]}>
-      <PageHeading
-        eyebrow="COVENANT / Transactions"
-        title="Transaction Inspector"
-        description="The same frozen transaction, examined from three independent perspectives: what the AI proposed, what the authority gate decided, and what the executor verified."
-        actions={<Button variant="outline" asChild><Link href={`/audit?tx=${id}`}><ListChecks /> Open audit trail</Link></Button>}
-      />
+    <AppShell crumbs={[{ label: 'Transaction inspector', href: '/transactions' }, { label: txRef(id) }]}>
+      <EditorialPageHeader id="inspector-title" index="03" kicker="Transaction inspector" compact
+        title={<>A proposal is<br />not permission</>}
+        lede="Trace the request from agent intent to independent execution."
+        side={<Key id={id} />} />
       <RequireLogin what="this transaction">{authenticated && <Inspector id={id} />}</RequireLogin>
     </AppShell>
   )

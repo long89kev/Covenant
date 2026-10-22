@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: 'COVENANT: autonomous actions, distributed authority. AI procurement agents that cannot authorize payments alone.',
 }
 
-export const viewport: Viewport = { themeColor: '#0C1728' }
+export const viewport: Viewport = { themeColor: '#F1F2EB' }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

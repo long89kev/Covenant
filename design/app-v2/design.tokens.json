@@ -1,0 +1,29 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "name": "COVENANT — Unified Editorial Authority",
+  "source": "COVENANT Landing Redesign v2 exact core palette",
+  "color": {
+    "paper": "#F1F2EB",
+    "paperElevated": "#F8F8F3",
+    "ink": "#17201E",
+    "textSecondary": "#6F7871",
+    "hairline": "#D5DAD1",
+    "console": "#111B19",
+    "consoleElevated": "#22332B",
+    "signal": "#D5F96A",
+    "failure": "#F19D90"
+  },
+  "font": {
+    "sans": "Inter, ui-sans-serif, system-ui, -apple-system, Helvetica Neue, Arial, sans-serif",
+    "mono": "ui-monospace, SFMono-Regular, Cascadia Code, Segoe UI Mono, monospace"
+  },
+  "layout": {
+    "sidebarDesktop": "258px",
+    "appPaddingDesktop": "clamp(26px, 5vw, 85px)",
+    "appTopbarHeight": "94px",
+    "mobileNavigationBreakpoint": "840px",
+    "inspectorStackBreakpoint": "1250px"
+  },
+  "radius": {"primaryControl": "3px", "authorityConsole": "10px"},
+  "transition": {"duration": "180ms", "reduceMotionSupport": true}
+}

@@ -2,10 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useTideCloak } from '@tidecloak/nextjs'
-import { LogIn, ShieldAlert } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { capabilityMode, type CapabilityMode, type Health } from '@/lib/ui/model'
-import { SecurityEmptyState, Spinner } from './primitives'
+import { GateState, Loading } from './primitives'
 
 export interface ApiResult<T = any> {
   status: number
@@ -76,14 +74,12 @@ export function useCapability(): Capability {
 // Pages that read protected data. Shows a real sign-in state instead of a blank screen.
 export function RequireLogin({ children, what }: { children: ReactNode; what: string }) {
   const { authenticated, isInitializing, login } = useTideCloak()
-  if (isInitializing) {
-    return <p role="status" className="flex items-center gap-2 text-ink-secondary"><Spinner /> Connecting to TideCloak…</p>
-  }
+  if (isInitializing) return <Loading>Connecting to TideCloak…</Loading>
   if (!authenticated) {
     return (
-      <SecurityEmptyState icon={ShieldAlert} title={`Log in with Tide to view ${what}`} action={<Button onClick={() => login()}><LogIn /> Log in with Tide</Button>}>
+      <GateState kicker="Session required" title={`Log in with Tide to view ${what}`} action={<button type="button" className="btn-ink" onClick={() => login()}>Log in with Tide <span aria-hidden>↗</span></button>}>
         This data is served only to a TideCloak-verified session. Your token is re-verified by the server on every request.
-      </SecurityEmptyState>
+      </GateState>
     )
   }
   return <>{children}</>
@@ -93,8 +89,8 @@ export function RequireLogin({ children, what }: { children: ReactNode; what: st
 export function SessionExpired() {
   const { login } = useTideCloak()
   return (
-    <SecurityEmptyState icon={ShieldAlert} tone="pending" title="Session expired or token rejected (NOT_AUTHENTICATED)" action={<Button onClick={() => login()}><LogIn /> Log in again</Button>}>
+    <GateState tone="pending" kicker="NOT_AUTHENTICATED" title="Session expired or token rejected" action={<button type="button" className="btn-ink" onClick={() => login()}>Log in again <span aria-hidden>↗</span></button>}>
       The server refused the access token. Nothing was changed.
-    </SecurityEmptyState>
+    </GateState>
   )
 }

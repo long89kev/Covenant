@@ -3,12 +3,10 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTideCloak } from '@tidecloak/nextjs'
-import { Bot } from 'lucide-react'
 import { AppShell } from '@/components/covenant/app-shell'
-import { PageHeading, Panel, SecurityEmptyState, Spinner } from '@/components/covenant/primitives'
+import { EditorialPageHeader, GateState, Loading } from '@/components/covenant/primitives'
 import { RequireLogin, SessionExpired, useApi } from '@/components/covenant/session'
 import { TransactionsTable } from '@/components/covenant/transactions-table'
-import { Button } from '@/components/ui/button'
 import type { TxList } from '@/lib/ui/model'
 
 function List() {
@@ -17,24 +15,26 @@ function List() {
   useEffect(() => {
     api<TxList & { error?: string }>('/api/transactions').then(setR)
   }, [api])
-  if (!r) return <p role="status" className="flex items-center gap-2 text-ink-secondary"><Spinner /> Loading transactions…</p>
+  if (!r) return <Loading>Loading transactions…</Loading>
   if (r.status === 401) return <SessionExpired />
-  if (!r.ok) return <SecurityEmptyState tone="danger" title={`Could not load transactions (${r.data.error ?? `HTTP_${r.status}`})`} />
+  if (!r.ok) return <GateState tone="danger" kicker={r.data.error ?? `HTTP_${r.status}`} title="Could not load transactions" />
   if (r.data.transactions.length === 0) {
     return (
-      <SecurityEmptyState title="No frozen transactions yet" action={<Button asChild><Link href="/negotiate"><Bot /> Open AI Negotiation</Link></Button>}>
+      <GateState kicker="Empty ledger" title="No frozen transactions yet" action={<Link className="btn-ink" href="/negotiate">Open agent activity <span aria-hidden>↗</span></Link>}>
         Freeze an agent proposal to create the first immutable transaction.
-      </SecurityEmptyState>
+      </GateState>
     )
   }
-  return <Panel><TransactionsTable rows={r.data.transactions} caption="Frozen transactions, newest first" /></Panel>
+  return <TransactionsTable rows={r.data.transactions} caption="Frozen transactions, newest first" />
 }
 
 export default function TransactionsPage() {
   const { authenticated } = useTideCloak()
   return (
-    <AppShell crumbs={[{ label: 'Transactions' }]}>
-      <PageHeading eyebrow="COVENANT / Transactions" title="Frozen transactions" description="Every agent proposal frozen into canonical bytes. Open one to inspect its proposal, authority gate and executor verdict." />
+    <AppShell crumbs={[{ label: 'Transaction inspector' }]}>
+      <EditorialPageHeader id="tx-title" index="03" kicker="Transaction inspector" compact
+        title={<>Every request,<br />frozen</>}
+        lede="Each agent proposal is frozen into canonical bytes. Open one to trace proposal, authority gate and executor verdict." />
       <RequireLogin what="transactions">{authenticated && <List />}</RequireLogin>
     </AppShell>
   )

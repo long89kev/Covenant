@@ -39,9 +39,10 @@ test.describe('shell and capability banner', () => {
 test.describe('mission control', () => {
   test('KPIs are truthful and scenario fixtures carry the seeded amounts', async ({ page }) => {
     await page.goto('/dashboard')
-    const proof = page.locator('.card', { hasText: 'Authorized with proof' })
-    await expect(proof).toContainText('0')
-    for (const [title, amount] of [['Clean procurement', '$1,200.00'], ['Malicious invoice', '$50,000.00'], ['Escalation attempt', '$12,000.00']]) {
+    const proof = page.getByTestId('metric-proof')
+    await expect(proof).toContainText('Live Tide proofs')
+    await expect(proof).toContainText('00')
+    for (const [title, amount] of [['Clean procurement', '$1,200'], ['Malicious invoice', '$50,000'], ['Escalation attempt', '$12,000']]) {
       const card = page.getByRole('link', { name: new RegExp(title) })
       await expect(card).toContainText(amount)
     }
@@ -113,14 +114,85 @@ test.describe('keyboard and navigation', () => {
   test('mobile drawer opens, navigates and closes with Escape', async ({ page }, info) => {
     test.skip(info.project.name !== 'mobile', 'drawer exists below 768px only')
     await page.goto('/dashboard')
-    await page.getByRole('button', { name: 'Open navigation' }).click()
+    const toggle = page.getByRole('button', { name: 'Open navigation' })
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await toggle.click()
     const drawer = page.getByRole('dialog', { name: 'Navigation' })
     await expect(drawer).toBeVisible()
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
     await page.keyboard.press('Escape')
     await expect(drawer).toBeHidden()
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
     await page.getByRole('button', { name: 'Open navigation' }).click()
     await drawer.getByRole('link', { name: 'Governance' }).click()
     await expect(page).toHaveURL(/\/governance$/)
     await expect(drawer).toBeHidden()
+  })
+})
+
+// Editorial Authority v2 (design/app-v2): same palette as landing v2, no blue, no dark sidebar.
+test.describe('brand parity', () => {
+  test('canvas, ink and sidebar use the landing v2 tokens; nothing renders cobalt', async ({ page }, info) => {
+    await page.goto('/dashboard')
+    const css = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement)
+      const body = getComputedStyle(document.body)
+      const side = document.querySelector('.sidebar-slot')
+      const all = [...document.querySelectorAll('body *')].flatMap((el) => {
+        const s = getComputedStyle(el)
+        return [s.color, s.backgroundColor, s.borderTopColor]
+      })
+      return {
+        tokens: ['--paper', '--ink', '--console', '--signal', '--failure'].map((t) => root.getPropertyValue(t).trim().toUpperCase()),
+        bg: body.backgroundColor,
+        fg: body.color,
+        sidebar: side ? getComputedStyle(side).backgroundColor : null,
+        blue: all.filter((c) => /rgb\(36, 92, 246\)|rgb\(12, 23, 40\)|rgb\(2, 169, 146\)/.test(c)).length,
+      }
+    })
+    expect(css.tokens).toEqual(['#F1F2EB', '#17201E', '#111B19', '#D5F96A', '#F19D90'])
+    expect(css.bg).toBe('rgb(241, 242, 235)')
+    expect(css.fg).toBe('rgb(23, 32, 30)')
+    if (info.project.name === 'desktop') expect(css.sidebar).toBe('rgb(235, 238, 230)')
+    expect(css.blue, 'no legacy cobalt / midnight / teal').toBe(0)
+  })
+
+  test('numbered navigation and editorial titles on every route', async ({ page }, info) => {
+    test.skip(info.project.name === 'mobile', 'sidebar is a drawer on mobile')
+    for (const [route, title] of [['/dashboard', /Control, without/], ['/negotiate', /Let them/], ['/transactions', /Every request/], ['/governance', /Authority has/], ['/audit', /Show the/]] as const) {
+      await page.goto(route)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
+      await expect(page.getByRole('navigation', { name: 'Primary' }).locator('.nav-index')).toHaveText(['01', '02', '03', '04', '05'])
+    }
+  })
+
+  test('governance keeps business approval, QEA and ORK threshold as separate rows', async ({ page }) => {
+    await page.goto('/governance')
+    for (const h of ['Business authorization', 'Realm governance', 'Cryptographic signing']) {
+      await expect(page.getByRole('heading', { name: h, level: 2 })).toBeVisible()
+    }
+    await expect(page.locator('body')).not.toContainText(/quorum 2\/3/i)
+  })
+})
+
+test.describe('responsive', () => {
+  for (const width of [390, 768, 1024, 1440]) {
+    test(`no horizontal overflow at ${width}px on all routes`, async ({ page }, info) => {
+      test.skip(info.project.name !== 'desktop', 'width loop runs once')
+      await page.setViewportSize({ width, height: 900 })
+      for (const route of ROUTES) {
+        await page.goto(route)
+        await expect(banner(page)).toHaveAttribute('data-mode', 'SIMULATED')
+        await noHorizontalOverflow(page)
+        if (width === 768 || width === 1024) await page.screenshot({ path: `docs/screenshots/w${width}${route.replace(/\//g, '-')}.png`, fullPage: true })
+      }
+    })
+  }
+
+  test('reduced motion disables transitions', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/dashboard')
+    const d = await page.evaluate(() => getComputedStyle(document.querySelector('.nav-arrow') ?? document.body).transitionDuration)
+    expect(['0s', '1e-05s']).toContain(d)
   })
 })

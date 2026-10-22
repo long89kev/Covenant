@@ -1,0 +1,52 @@
+/* COVENANT brand tokens — the single source shared by the landing page and the authenticated app.
+   Values are copied 1:1 from design/app-v2/landing.v2.tokens.reference.json (Landing v2, "Editorial
+   Authority"). Change a value here, never in a component. The landing page must import this file too. */
+
+:root {
+  /* core palette (exact landing parity) */
+  --paper: #F1F2EB;
+  --paper2: #F8F8F3;
+  --ink: #17201E;
+  --muted: #6F7871;
+  --line: #D5DAD1;
+  --forest: #16211E;
+  --console: #111B19;
+  --console2: #22332B;
+  --signal: #D5F96A;
+  --failure: #F19D90;
+
+  /* toned text and rules derived for contrast on paper / console (measured AA for body text) */
+  --sidebar: #EBEEE6;
+  --rule-strong: #AEBBAE;
+  --label: #7B897E;
+  --signal-ink: #3F5924;
+  --signal-rule: #9EB769;
+  --period: #8FAD3E;
+  --wait-ink: #74643B;
+  --wait-rule: #BCAE7F;
+  --wait-console: #E8C18C;
+  --fail-ink: #8D5144;
+  --fail-rule: #BD837B;
+  --fail-verdict: #A85C50;
+  --console-rule: #3B5043;
+  --console-label: #98AA9B;
+  --console-text: #BDCCBD;
+  --focus: #88A731;
+
+  /* type */
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Code", "Segoe UI Mono", monospace;
+
+  /* layout */
+  --max-width: 1512px;
+  --sidebar-width: 258px;
+  --topbar-height: 94px;
+  --pad: clamp(26px, 5vw, 85px);
+
+  /* radius */
+  --r-control: 3px;
+  --r-status: 2px;
+  --r-console: 10px;
+
+  --duration: 180ms;
+}

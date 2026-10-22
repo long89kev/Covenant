@@ -55,7 +55,7 @@ npm ci
 cp .env.example .env        # AUTHORITY_MODE=fallback; anything else fails closed
 npm run build && npm start  # http://localhost:3000 (needs TideCloak, see docs/SETUP.md)
 npm test                    # 33 unit, adversarial, service and UI-model tests
-npm run test:e2e            # Playwright UI checks, 1440x900 and 390x844
+npm run test:e2e            # Playwright UI checks: 390/768/1024/1440px, palette parity, honesty labels
 ```
 
 Full TideCloak setup: [`docs/SETUP.md`](docs/SETUP.md) · Evidence and blockers: [`docs/12_EXECUTION_LOG.md`](docs/12_EXECUTION_LOG.md) · Threat model: [`docs/03_THREAT_MODEL.md`](docs/03_THREAT_MODEL.md) · Demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)
