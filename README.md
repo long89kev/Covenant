@@ -29,11 +29,11 @@ Agents can finish purchases without any one person, server or AI holding the pow
 
 ## Demo
 
-Video: [`demo.mp4`](demo.mp4) (48 s, voiceover). Screens: landing → authorization playground (within policy · missing approval · tampered) → Mission Control → Governance.
+Video: [`demo.mp4`](demo.mp4) (48 s, voiceover). Screens: landing → authorization playground (within policy · missing approval · tampered) → Overview → Governance.
 
-| Mission Control | Transaction Inspector (malicious invoice) |
+| Landing: tampered request (simulation) | Workspace overview |
 |---|---|
-| ![Mission Control](docs/screenshots/desktop-dashboard.png) | ![Inspector](docs/screenshots/live-malicious-3-after.png) |
+| ![Landing, tampered scenario](docs/screenshots/landing-desktop-attack.png) | ![Overview](docs/screenshots/desktop-dashboard.png) |
 
 ## What is real, what is simulated
 
